@@ -111,6 +111,96 @@ class BlockChain {
 		temp->Next2 = newBlock2;
 	}
 	
+	void validateChain(){
+		Block * iterator = nullptr;
+		if(head->Next1 == nullptr && head->Next2 !=nullptr){
+			iterator = head->Next2;
+		}
+		else{
+			iterator = head->Next1;
+		}
+		
+		while(iterator->Next1 != nullptr){
+			if(iterator->Next1->prevKey != iterator->currKey){
+				cout<<"BLock with "<<iterator->BlockId<<" is Broken"<<endl;
+				return;
+			}
+			
+			if(iterator -> Next2 != nullptr){
+				Block * temp = iterator;
+				temp = temp->Next1;
+				while(temp !=  nullptr){
+					if(temp->Next1->prevKey != temp->currKey){
+						cout<<"BLock with "<<iterator->BlockId<<" is Broken"<<endl;
+						return;
+					}
+				}
+				Block * temp2 = iterator;
+				temp2 = temp2->Next2;
+				while(temp2 != nullptr){
+					if(temp2->Next1->prevKey != temp2->currKey){
+						cout<<"BLock with "<<iterator->BlockId<<" is Broken"<<endl;
+						return;
+					}
+				}
+				break;
+			
+			}
+		}
+		
+	}
+	
+	void repairChain(int blockID){
+		Block * iterator = nullptr;
+		bool isFound = false;
+		if(head->Next1 == nullptr && head->Next2 !=nullptr){
+			iterator = head->Next2;
+		}
+		else{
+			iterator = head->Next1;
+		}
+		
+		while(iterator->Next1 != nullptr){
+			if(iterator->BlockId == blockID){
+				isFound = true;
+				
+			}
+			
+			if(iterator -> Next2 != nullptr){
+				Block * temp = iterator;
+				temp = temp->Next1;
+				while(temp !=  nullptr){
+					if(temp->BlockId == blockID){
+						isFound =true;
+				
+					}
+					
+					if(isFound){
+						calculateCurrentKey(temp,temp->BlockId,temp->workDone,temp->data,temp->prevKey);
+					}
+				}
+				Block * temp2 = iterator;
+				temp2 = temp2->Next2;
+				while(temp2 != nullptr){
+					if(temp2->BlockId == blockID){
+						isFound =true;
+				
+					}
+					if(isFound){
+						calculateCurrentKey(temp2,temp2->BlockId,temp2->workDone,temp2->data,temp2->prevKey);
+					}
+				}
+				break;
+			
+			}
+			
+			if(isFound){
+				calculateCurrentKey(iterator,iterator->BlockId,iterator->workDone,iterator->data,iterator->prevKey);
+			}
+		}
+	
+	}
+	
 	void temperBlock(int blockID,int newKey){
 		Block * iterator = head;
 		
