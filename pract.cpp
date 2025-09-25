@@ -62,6 +62,36 @@ class charList{
 		
 	
 	}
+	
+	void insert_at_begin(char val){
+	    Node* newNode = new Node(val);
+	    if(head == nullptr){
+		head = newNode;
+		tail = newNode;
+		return;
+	    }
+	    newNode->next = head;
+	    head->prev = newNode;
+	    head = newNode;
+	    size++;
+	}
+	void deleteBack(Node *current_pointer){
+	    if (current_pointer == nullptr) return;
+
+	    if (current_pointer->prev != nullptr)
+		current_pointer->prev->next = current_pointer->next;
+	    else
+		head = current_pointer->next;  
+
+	    if (current_pointer->next != nullptr)
+		current_pointer->next->prev = current_pointer->prev;
+	    else
+		tail = current_pointer->prev;  
+
+	    delete current_pointer;
+	    size--;
+	}
+
 	void formation(string line){
 		for(int i =0  ; i < line.length();i++){
 			insert_at_end(line[i]);	
@@ -69,34 +99,11 @@ class charList{
 	
 	}
 	
-	void insertChar(char character,int x_pos,lineNode* line){
-		Node *newNode = new Node(character);
-		if(head == nullptr && tail == nullptr){
-			head = newNode;
-			tail = newNode;
-			return;
-		}
-		if(x_pos > size){
-			return;
-		}
-		
-		Node *temp = head;
-		int count_x = 0;
-		
-		while(count_x != x_pos){
-			temp = temp->next;	
-			count_x++;
-		}
-		Node *nextNode = temp->next;
-		temp->next = newNode;
-		newNode->prev = temp;
-		if(nextNode != nullptr){
-			newNode->next = nextNode;
-			nextNode->prev = newNode;
-			return;
-		} 
-		newNode->next = nullptr;
-		
+	Node * get_head(){
+		return head;
+	}
+	Node * get_tail(){
+		return tail;
 	}
 	
 	void show(int x=-1,int  y =-1){
@@ -120,6 +127,9 @@ class charList{
 	
 		cout<<endl;
 	}
+	
+	
+	
 	
 	Node *getLineContent(){
 		return head;
@@ -193,6 +203,65 @@ class textEditor{
 
 	}
 	
+	void insertChar(char character){
+		Node *newNode = new Node(character);
+		
+		lineNode *tempLine = headLine;
+		
+		
+		int count_y = 0 ;
+		
+		while(count_y != cursor_y){
+			tempLine = tempLine->next;
+			count_y++;
+		}
+		
+		
+		
+		Node * head = tempLine->data.get_head();
+		Node * tail = tempLine->data.get_tail();
+		if(cursor_x == 0){
+		    tempLine->data.insert_at_begin(character);
+		    return;
+		}
+				
+		
+		
+		
+		Node *temp = head;
+		int count_x = 0;
+		
+		while(count_x != cursor_x-1){
+			temp = temp->next;	
+			count_x++;
+		}
+		Node *nextNode = temp->next;
+		temp->next = newNode;
+		newNode->prev = temp;
+		newNode->next =nextNode;
+		if(nextNode != nullptr){
+			newNode->next = nextNode;
+			nextNode->prev = newNode;
+			return;
+		} 
+		newNode->next = nullptr;
+		
+	}
+	
+	void deleteFront(){
+		lineNode *tempLine = headLine;
+		
+		for(int i  =0 ; i < cursor_y;i++){
+			tempLine =tempLine->next;		
+		}
+		Node*head= tempLine->data.get_head();
+		
+		for(int i = 0;i<cursor_x;i++){
+			head = head->next;
+		}
+		headLine->data.deleteBack(head);
+	}
+	
 	void move_left(){
 		if(cursor_x >0)
 			cursor_x--;
@@ -210,7 +279,7 @@ class textEditor{
 		system("clear");
 	}
 	void insertion(char character){
-		headLine->data.insertChar(character,cursor_x);
+		insertChar(character);
 
 		showAll();
 	}
@@ -269,7 +338,7 @@ int main(){
 			
 			while(true){
 				input = getch();
-				if(input =='n')
+				if(input =='0')
 					break;
 				system("clear");
 				editor.insertion(input);
@@ -285,51 +354,17 @@ int main(){
 		else if(user_choice == 's'){
 			editor.move_down();
 		}
+		else if(user_choice == 'r'){
+			editor.deleteFront();
+		}
 		else if(user_choice == 'n' ){
 			should_run = false;
 		}
 	}
-	/*while(should_run){
-	
-		cout<<"Enter you choice: ";
-		cin>>user_choice;
-		
-		switch(user_choice){
-			case 'w':
-			// moveup;
-			break;
-			
-			case 's':
-			//movedown
-			break;
-			
-			case 'a':
-			//moveleft
-			break;
-			
-			case 'd':
-			//moveright
-			break;
-			
-			case 'i':
-			//insert
-			break;
-			
-			
-			default:
-				should_run =false;
-				continue;
-		}
-	}
-	*/
-	
+
 		
 	return 0;
 }
 
 
-/*
-								code written with lots of love by a human@
-									    happy checking!
-									    	  😉️(just a )
-*/
+
