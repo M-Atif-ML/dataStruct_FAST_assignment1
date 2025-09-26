@@ -178,6 +178,7 @@ class BlockChain {
 					if(isFound){
 						calculateCurrentKey(temp,temp->BlockId,temp->workDone,temp->data,temp->prevKey);
 					}
+					temp = temp->Next1;
 				}
 				Block * temp2 = iterator;
 				temp2 = temp2->Next2;
@@ -189,6 +190,7 @@ class BlockChain {
 					if(isFound){
 						calculateCurrentKey(temp2,temp2->BlockId,temp2->workDone,temp2->data,temp2->prevKey);
 					}
+					temp2 = temp2->Next1;
 				}
 				break;
 			
@@ -259,7 +261,8 @@ class BlockChain {
 		if(temp->Next2 != nullptr){
 			Block *fork1 = temp;
 			fork1 = fork1->Next1;
-			cout<<"***Fork detected at this block***"<<endl;
+			cout<<"***Fork detected "<<endl;
+
 			while(fork1 != nullptr ){
 				cout<<"BlockID: "<<fork1->BlockId<<endl; 
 				cout<<" | Data: " <<fork1->data<<endl;
@@ -270,7 +273,7 @@ class BlockChain {
 			}
 			
 			Block *fork2 = temp;
-			fork2 = fork2->Next2;
+			fork2 = fork2->Next1;
 			
 			while(fork2 != nullptr ){
 				cout<<"BlockID: "<<fork2->BlockId<<endl; 
@@ -293,37 +296,89 @@ class BlockChain {
 int BlockChain :: idCount  = 1;
 
 int main(){
-	BlockChain obj;
-	
-
-
-	cout<<"Creating Genesis Block..."<<endl;
-	obj.createGenesisBlock();
-	
-	cout<<"Adding Block 2..."<<endl;
-	obj.addBlock("Task1", 50);
-	
-	cout<<"Adding Block 3..."<<endl;
-	obj.addBlock("Task2", 70);
-	
-	cout<<"Creating Fork at Block 2..."<<endl;
-	obj.forkChain(2, "ForkTask1", "ForkTask2", 80, 90);
-	
-	cout<<"\nDisplaying Entire Blockchain:"<<endl;
-	obj.displayChain();
-	
-
-	cout<<"=== TESTING ANOTHER SCENARIO ===" << endl;
-
-
-	obj.addBlock("home Work", 100);
-	obj.addBlock("go to school", 200);
-	obj.forkChain(1, "AltPath1", "AltPath2", 150, 180); 
-	
-	cout<<"Displaying Second Blockchain:"<<endl;
-	obj.displayChain();
-	
-	return 0;
+    BlockChain obj;
+    int choice;
+    
+    do {
+        cout<<"\n=== BLOCKCHAIN TEST MENU ==="<<endl;
+        cout<<"1. Create Genesis Block"<<endl;
+        cout<<"2. Add Block"<<endl;
+        cout<<"3. Create Fork"<<endl;
+        cout<<"4. Tamper Block"<<endl;
+        cout<<"5. Validate Chain"<<endl;
+        cout<<"6. Repair Chain"<<endl;
+        cout<<"7. Display Chain"<<endl;
+        cout<<"8. Exit"<<endl;
+        cout<<"Enter your choice: ";
+        cin>>choice;
+        
+        switch(choice) {
+            case 1: {
+                obj.createGenesisBlock();
+                break;
+            }
+            case 2: {
+                string data;
+                int work;
+                cout<<"Enter data for new block: ";
+                cin>>data;
+                cout<<"Enter work done: ";
+                cin>>work;
+                obj.addBlock(data, work);
+                break;
+            }
+            case 3: {
+                int blockID;
+                string data1, data2;
+                int work1, work2;
+                cout<<"Enter block ID to fork from: ";
+                cin>>blockID;
+                cout<<"Enter data for fork path 1: ";
+                cin>>data1;
+                cout<<"Enter work for fork path 1: ";
+                cin>>work1;
+                cout<<"Enter data for fork path 2: ";
+                cin>>data2;
+                cout<<"Enter work for fork path 2: ";
+                cin>>work2;
+                obj.forkChain(blockID, data1, data2, work1, work2);
+                break;
+            }
+            case 4: {
+                int blockID, newKey;
+                cout<<"Enter block ID to tamper: ";
+                cin>>blockID;
+                cout<<"Enter new key value: ";
+                cin>>newKey;
+                obj.temperBlock(blockID, newKey);
+                break;
+            }
+            case 5: {
+                obj.validateChain();
+                break;
+            }
+            case 6: {
+                int blockID;
+                cout<<"Enter block ID to repair from: ";
+                cin>>blockID;
+                obj.repairChain(blockID);
+                break;
+            }
+            case 7: {
+                obj.displayChain();
+                break;
+            }
+            case 8: {
+                cout<<"Exiting program..."<<endl;
+                break;
+            }
+            default: {
+                cout<<"Invalid choice! Please try again."<<endl;
+            }
+        }
+    } while(choice!= 8);
+    
+    return 0;
 }
 
 
