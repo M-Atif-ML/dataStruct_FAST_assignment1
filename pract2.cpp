@@ -47,6 +47,10 @@ class BlockChain {
 		block->currKey = (int)(id * 37 + workDone*19+sum_ascii(data)+prevKey) % 100000;
 		
 	}
+	
+	bool isTempered(Block * prevBlock){
+		return !(prevBlock->currKey == prevBlock->Next1->prevKey);
+	}
 	public:
 	
 	BlockChain(){
@@ -111,7 +115,7 @@ class BlockChain {
 		temp->Next2 = newBlock2;
 	}
 	
-	void validateChain(){
+	bool validateChain(){
 		Block * iterator = nullptr;
 		if(head->Next1 == nullptr && head->Next2 !=nullptr){
 			iterator = head->Next2;
@@ -123,7 +127,7 @@ class BlockChain {
 		while(iterator->Next1 != nullptr){
 			if(iterator->Next1->prevKey != iterator->currKey){
 				cout<<"BLock with id"<<iterator->BlockId<<" is Broken"<<endl;
-				return;
+				return false;
 			}
 			
 			if(iterator -> Next2 != nullptr){
@@ -132,7 +136,7 @@ class BlockChain {
 				while(temp !=  nullptr){
 					if(temp->Next1->prevKey != temp->currKey){
 						cout<<"BLock with id"<<iterator->BlockId<<" is Broken"<<endl;
-						return;
+						return false;
 					}
 				}
 				Block * temp2 = iterator;
@@ -140,13 +144,15 @@ class BlockChain {
 				while(temp2 != nullptr){
 					if(temp2->Next1->prevKey != temp2->currKey){
 						cout<<"BLock with id"<<iterator->BlockId<<" is Broken"<<endl;
-						return;
+						return false;
 					}
 				}
 				break;
 			
 			}
 		}
+		
+		return true;
 		
 	}
 	
@@ -167,7 +173,7 @@ class BlockChain {
 				
 			}
 			
-			if(iterator -> Next2 != nullptr){
+			if(iterator -> Next2 != nullptr){https://youtu.be/y_zk8f6aBQk?list=LL
 				Block * temp = iterator;
 				temp = temp->Next1;
 				while(temp !=  nullptr){
@@ -244,6 +250,7 @@ class BlockChain {
 		}
 	}
 	
+	
 	void temperBlock(int blockID,int newKey){
 		Block * iterator = head;
 		
@@ -288,14 +295,77 @@ class BlockChain {
 			iterator = iterator -> Next1;
 		} 
 		
-		
-		
 		if(!iterator){
 			cout<<"Could not found any block with id:"<<blockID<<endl;
 		}
 		cout<<"Block repaired"<<endl;
 		
 	}
+	
+	void consensusRule(){
+		Block * iterator = head;
+		
+		while(iterator != nullptr){
+			if(iterator->Next2 != nullptr){
+				break;
+			} 
+				
+			iterator = iterator -> Next1;
+		}
+			
+			
+		// from here we are gonna decide
+			
+		Block * fork1 = head;
+		int countFork1 = 0 ;
+		
+		while(fork1!=nullptr){
+			countFork1++;
+			if(isTempered(fork1)){
+				countFork1 = -1;
+				break;
+			}
+				
+			fork1 = fork1 -> Next1;
+		}
+		
+		Block * fork2 = head;
+		int countFork2 = 0 ;
+		
+		while(fork2!=nullptr){
+			countFork2++;
+			if(isTempered(fork2)){
+				countFork2 = -1;
+				break;
+			}
+			fork1 = fork1 -> Next1;
+		}
+	
+		if(countFork2 == -1 && countFork1 > 0){
+			cout<<"Path2 is Safe"<<endl;
+		}
+		else if(countFork1 == -1 && countFork1 > 0){
+			cout<<"Path1 is Safe"<<endl;
+		}
+		else{
+			if(countFork1 > countFork2){
+				cout<<"Path1 Has more blocks"<<endl;
+			}
+			else if(countFork1  < countFork2){
+				cout<<"Path2 Has more blocks"<<endl;
+			}
+			else{
+				cout<<"Both have same number of block "<<endl;
+			}
+		
+		}
+			
+			
+			
+	}
+			
+	
+
 	
 	void displayChain() {
 	    Block* temp = head;
@@ -339,6 +409,17 @@ class BlockChain {
 	   
 	   cout<<endl;
 	}
+	
+	
+	~BlockChain(){
+	
+	Block* current = head;
+    		while (current != nullptr) {
+        		Block* next = current->Next1;
+      			delete current;
+        		current = next;
+    		}
+    	}
 };
 
 int BlockChain :: idCount  = 1;

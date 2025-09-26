@@ -3,6 +3,35 @@
 #include <termios.h>
 #include <unistd.h>
 
+
+
+/*
+==============================
+   TEXT EDITOR USER MANUAL
+==============================
+
+Controls:
+- a : Move cursor left
+- d : Move cursor right
+- w : Move cursor up
+- s : Move cursor down
+
+Editing:
+- i : Insert mode (type characters) just like vim
+      Press '0' to exit insert mode
+- r : Delete character at cursor
+
+Exit:
+- n : Quit the editor
+
+Notes:
+- Cursor is shown as '_'
+- File loaded initially: input.txt
+==============================
+*/
+
+
+
 using namespace std;
 
 
@@ -75,7 +104,7 @@ class charList{
 	    head = newNode;
 	    size++;
 	}
-	void deleteBack(Node *current_pointer){
+	void deleteFront(Node *current_pointer){
 	    if (current_pointer == nullptr) return;
 
 	    if (current_pointer->prev != nullptr)
@@ -87,10 +116,11 @@ class charList{
 		current_pointer->next->prev = current_pointer->prev;
 	    else
 		tail = current_pointer->prev;  
-
+		
 	    delete current_pointer;
 	    size--;
 	}
+	
 
 	void formation(string line){
 		for(int i =0  ; i < line.length();i++){
@@ -246,6 +276,7 @@ class textEditor{
 		} 
 		newNode->next = nullptr;
 		
+		
 	}
 	
 	void deleteFront(){
@@ -259,8 +290,10 @@ class textEditor{
 		for(int i = 0;i<cursor_x;i++){
 			head = head->next;
 		}
-		headLine->data.deleteBack(head);
+		headLine->data.deleteFront(head);
 	}
+	
+	
 	
 	void move_left(){
 		if(cursor_x >0)
@@ -305,6 +338,18 @@ class textEditor{
 			cout<<endl;
 			temp = temp->next;
 			
+		}
+		
+	}
+	
+	~textEditor(){
+	
+		lineNode* temp = headLine;
+		
+		while(temp != nullptr){
+			lineNode* nextLine = temp->next;
+			delete temp;   // this will call lineNode destructor
+			temp = nextLine;
 		}
 		
 	}
