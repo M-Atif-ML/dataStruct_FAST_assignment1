@@ -122,7 +122,7 @@ class BlockChain {
 		
 		while(iterator->Next1 != nullptr){
 			if(iterator->Next1->prevKey != iterator->currKey){
-				cout<<"BLock with "<<iterator->BlockId<<" is Broken"<<endl;
+				cout<<"BLock with id"<<iterator->BlockId<<" is Broken"<<endl;
 				return;
 			}
 			
@@ -131,7 +131,7 @@ class BlockChain {
 				temp = temp->Next1;
 				while(temp !=  nullptr){
 					if(temp->Next1->prevKey != temp->currKey){
-						cout<<"BLock with "<<iterator->BlockId<<" is Broken"<<endl;
+						cout<<"BLock with id"<<iterator->BlockId<<" is Broken"<<endl;
 						return;
 					}
 				}
@@ -139,7 +139,7 @@ class BlockChain {
 				temp2 = temp2->Next2;
 				while(temp2 != nullptr){
 					if(temp2->Next1->prevKey != temp2->currKey){
-						cout<<"BLock with "<<iterator->BlockId<<" is Broken"<<endl;
+						cout<<"BLock with id"<<iterator->BlockId<<" is Broken"<<endl;
 						return;
 					}
 				}
@@ -160,6 +160,7 @@ class BlockChain {
 			iterator = head->Next1;
 		}
 		
+		
 		while(iterator->Next1 != nullptr){
 			if(iterator->BlockId == blockID){
 				isFound = true;
@@ -177,6 +178,7 @@ class BlockChain {
 					
 					if(isFound){
 						calculateCurrentKey(temp,temp->BlockId,temp->workDone,temp->data,temp->prevKey);
+						cout<<"In Repair"<<endl;
 					}
 					temp = temp->Next1;
 				}
@@ -189,6 +191,7 @@ class BlockChain {
 					}
 					if(isFound){
 						calculateCurrentKey(temp2,temp2->BlockId,temp2->workDone,temp2->data,temp2->prevKey);
+						cout<<"In Repair"<<endl;
 					}
 					temp2 = temp2->Next1;
 				}
@@ -198,9 +201,47 @@ class BlockChain {
 			
 			if(isFound){
 				calculateCurrentKey(iterator,iterator->BlockId,iterator->workDone,iterator->data,iterator->prevKey);
+				cout<<"In Repair"<<endl;
 			}
+			iterator = iterator->Next1;
 		}
+		if(!isFound){
+			cout<<"Couldnot find the block"<<endl;
+			return;
+		}
+	}
 	
+	
+	void recalculte(Block * starting){
+		Block *iterator=starting;
+		
+		int key = iterator->currKey;
+		
+		while(iterator != nullptr){
+			
+			if(iterator->Next2 !=nullptr){
+				Block * temp = iterator;
+					temp = temp->Next1;
+			
+				while(temp!= nullptr){
+					calculateCurrentKey(temp, temp->BlockId, -11111,temp->data, key);
+					temp = temp->Next1;
+				}
+				
+				Block * temp2 = iterator;
+					temp2 = temp2->Next2;
+			
+				while(temp2!= nullptr){
+					calculateCurrentKey(temp2, temp2->BlockId, temp2->workDone,temp2->data, key);
+					temp2 = temp2->Next1;
+				}
+				
+				break;
+			
+			
+			}
+			iterator = iterator ->Next1;
+		}
 	}
 	
 	void temperBlock(int blockID,int newKey){
@@ -210,6 +251,7 @@ class BlockChain {
 		
 			if(iterator->BlockId == blockID){
 				iterator->currKey = newKey;
+				
 				cout<<"The block has been tempered"<<endl;
 				return;
 			}
@@ -220,6 +262,8 @@ class BlockChain {
 				while(temp != nullptr){
 					if(temp->BlockId == blockID){
 						temp->currKey = newKey;
+						
+						
 						return;
 					}
 					temp = temp->Next1;
@@ -230,6 +274,7 @@ class BlockChain {
 					
 					if(temp2->BlockId == blockID){
 						temp2->currKey = newKey;
+					
 						return;
 					}
 					temp2 = temp2->Next1;	
@@ -243,9 +288,12 @@ class BlockChain {
 			iterator = iterator -> Next1;
 		} 
 		
+		
+		
 		if(!iterator){
 			cout<<"Could not found any block with id:"<<blockID<<endl;
 		}
+		cout<<"Block repaired"<<endl;
 		
 	}
 	
